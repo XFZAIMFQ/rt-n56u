@@ -1,11 +1,12 @@
 SRC_NAME = mentohust-master
-SRC_URL = https://github.com/AutoCONFIG/mentohust/archive/refs/heads/master.zip
+SRC_URL = https://github.com/AutoCONFIG/mentohust-padavan/archive/refs/heads/master.zip
 THISDIR = $(shell pwd)
+DIR_NAME = mentohust-padavan-master
 
 LDFLAGS += -L$(STAGEDIR)
 
 all: download_test extract_test config_test
-	$(MAKE) -C $(SRC_NAME)
+	$(MAKE) -C $(DIR_NAME)
 
 download_test: 
 	( if [ ! -f $(THISDIR)/$(SRC_NAME).zip ]; then \
@@ -25,8 +26,8 @@ config_test:
 	fi )
 
 configure:
-	( cd $(SRC_NAME) ; \
-	autoreconf -fi ; \
+	( cd $(DIR_NAME) ; \
+	./autogen.sh ; \
 	am_cv_func_iconv=no \
 	./configure \
 		--prefix=/usr \
@@ -38,12 +39,12 @@ configure:
 	)
 
 clean:
-	if [ -f $(SRC_NAME)/Makefile ] ; then \
-		$(MAKE) -C $(SRC_NAME) distclean ; \
+	if [ -f $(DIR_NAME)/Makefile ] ; then \
+		$(MAKE) -C $(DIR_NAME) distclean ; \
 	fi ; \
 	rm -f config_done
 
 romfs:
-	$(ROMFSINST) -p +x $(THISDIR)/$(SRC_NAME)/src/mentohust /usr/bin/mentohust
+	$(ROMFSINST) -p +x $(THISDIR)/$(DIR_NAME)/src/mentohust /usr/bin/mentohust
 	$(ROMFSINST) -p +x $(THISDIR)/scripts/mentohust.sh /usr/bin/mentohust.sh
 
