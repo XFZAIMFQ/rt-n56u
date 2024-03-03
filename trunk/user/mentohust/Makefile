@@ -14,7 +14,7 @@ download_test:
 	fi )
 	
 extract_test:
-	( if [ ! -d $(SRC_NAME) ]; then \
+	( if [ ! -d $(DIR_NAME) ]; then \
 		unzip -qq $(SRC_NAME).zip; \
 	fi )
 
