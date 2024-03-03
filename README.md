@@ -2,57 +2,6 @@
 ![GitHub All Releases](https://img.shields.io/github/downloads/hanwckf/rt-n56u/total)
 [![release](https://img.shields.io/github/release/hanwckf/rt-n56u.svg)](https://github.com/hanwckf/rt-n56u/releases)
 
-# README #
-
-Welcome to the rt-n56u project
-
-This project aims to improve the rt-n56u and other supported devices on the software part, allowing power user to take full control over their hardware.
-This project was created in hope to be useful, but comes without warranty or support. Installing it will probably void your warranty. 
-Contributors of this project are not responsible for what happens next.
-***
-# How to build this project? #
-This project uses Github's automatic compilation, you can download the compiled image directly or compile it by yourself.
-### Download compiled image ###
-* Go to Actions (https://github.com/ZenZRyan/rt-n56u/actions)
-* Select the latest workflow
-* Find your target and open it in Artifacts
-* Download image
-### Compile by yourself ###
-* Need Unix-like environmet (Take Ubuntu for example）
-* sudo apt update
-sudo apt install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
-	fakeroot kmod cpio git python3-docutils gettext automake autopoint \
-	texinfo build-essential help2man pkg-config zlib1g-dev libgmp3-dev \
-	libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
-* git clone https://github.com/ZenZRyan/rt-n56u.git
-* cd /opt/rt-n56u/toolchain-mipsel
-* ./clean_toolchain && ./build_toolchain #(recommendation)
-or ./dl_toolchain.sh
-* cd /opt/rt-n56u/trunk
-* fakeroot ./build_firmware_modify YOUR TARGET
-* Wait for the end, and the image file in the /trunk/image directory
-***
-### How do I get set up? ###
-
-* [Get the tools to build the system](https://bitbucket.org/padavan/rt-n56u/wiki/EN/HowToMakeFirmware) or [Download pre-built system image](https://bitbucket.org/padavan/rt-n56u/downloads)
-* Feed the device with the system image file (Follow instructions of updating your current system)
-* Perform factory reset
-* Open web browser on http://my.router to configure the services
-
-### Contribution guidelines ###
-
-* To be completed
-
-***
-
-### What does this fork change? ###
-
-* Updating minieap sources to minieap-taiga(From ZenZRyan) 
-* Updating mentohust sources
-* Updating suctclient
-
-*** 
-
 ### 特别说明 ###
 * 汉化字典来自：https://github.com/gorden5566/padavan
 * 更新日志：https://www.jianshu.com/p/d76a63a12eae
@@ -60,19 +9,12 @@ or ./dl_toolchain.sh
 ***
 
 ### 这个分支更新了什么？ ###
-* 更新minieap的软件源，采用来自ZenZRyan的minieap-taiga
-* 更新mentohust版本至最新版本（同步原作者）
-* 更新suctclient版本至最新版本（同步原作者）
+* 更新MiniEAP: ![MiniEAP](https://github.com/AutoCONFIG/minieap.git)
+* 更新MentoHust: ![MentoHUST](https://github.com/AutoCONFIG/mentohust-padavan.git)
+* 添加MiniEAP-Web界面支持
 
 ***
 # 编译说明 #
-* 本仓库采用Github的自动编译流程，你可以下载自动编译的固件或者自行手动编译
-### 自动编译 ###
-* 打开本仓库上方的Actions选项卡(https://github.com/ZenZRyan/rt-n56u/actions)
-* 在Workflow工作流中找到一个最新的工作流
-* 进入工作流之后，在下方的Artifacts中下载编译好的固件包
-* 找到你的设备所支持的固件，刷入即可
-### 手动编译 ###
 * 安装依赖包
 
 ```shell
@@ -121,14 +63,13 @@ sudo yum install ncurses-* flex byacc bison zlib-* gmp-* mpfr-* gettext \
 * 克隆源码
 
 ```shell
-git clone --depth=1 https://e.coding.net/hanwckf/rt-n56u/padavan.git /opt/rt-n56u
-#git clone --depth=1 https://github.com/hanwckf/rt-n56u.git /opt/rt-n56u
+git clone --depth=1 https://github.com/AutoCONFIG/rt-n56u.git
 ```
 
 * 准备工具链
 
 ```shell
-cd /opt/rt-n56u/toolchain-mipsel
+cd rt-n56u/toolchain-mipsel
 
 # （推荐）使用脚本下载预编译的工具链：
 sh dl_toolchain.sh
@@ -142,13 +83,13 @@ sh dl_toolchain.sh
 * (可选) 修改机型配置文件
 
 ```shell
-nano /opt/rt-n56u/trunk/configs/templates/PSG1218.config
+nano rt-n56u/trunk/configs/templates/PSG1218.config
 ```
 
 * 开始编译
 
 ```shell
-cd /opt/rt-n56u/trunk
+cd rt-n56u/trunk
 # 对于WSL环境，建议使用sudo进行编译，或者使用fakeroot-tcp代替fakeroot
 fakeroot ./build_firmware_modify PSG1218
 # 脚本第一个参数为路由型号，在trunk/configs/templates/中
