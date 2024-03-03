@@ -1,10 +1,10 @@
 #!/bin/sh
 
-pidfile="/var/sh_mentohust.pid"
+pidfile="/var/run/mentohust.pid"
 [ -f $pidfile ] && kill -9 "$(cat $pidfile)" || echo "$$" > $pidfile
 
 mentohust_exec="mentohust"
-conf_file="/var/mentohust.conf"
+conf_file="/var/tmp/mentohust.conf"
 bin_conf_file="/etc/storage/mentohust.conf"
 
 mentohust_vars="username password nic ip mask gw dns pinghost timeout interval \
