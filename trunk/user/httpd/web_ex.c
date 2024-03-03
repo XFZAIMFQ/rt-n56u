@@ -1977,7 +1977,7 @@ static int mentohust_action_hook(int eid, webs_t wp, int argc, char **argv)
 
 static int mentohust_status_hook(int eid, webs_t wp, int argc, char **argv)
 {
-	int status_code = pids("bin_mentohust");
+	int status_code = pids("mentohust");
 	websWrite(wp, "function mentohust_status() { return %d;}\n", status_code);
 	return 0;
 }

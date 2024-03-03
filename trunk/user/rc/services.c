@@ -265,7 +265,7 @@ void restart_scutclient(void)
 
 int is_mentohust_run(void)
 {
-	if(pids("bin_mentohust"))
+	if(pids("mentohust"))
 		return 1;
 	return 0;
 }
