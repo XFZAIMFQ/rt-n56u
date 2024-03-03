@@ -4,7 +4,7 @@ pidfile="/var/run/minieap.pid"
 [ -f $pidfile ] && kill -9 "$(cat $pidfile)" || echo "$$" > $pidfile
 
 minieap_exec="minieap"
-conf_file="/var/minieap.conf"
+conf_file="/var/tmp/minieap.conf"
 bin_conf_file="/etc/storage/minieap.conf"
 
 minieap_vars="username password nic module daemonize if_impl max_fail max_retries no_auto_reauth \
