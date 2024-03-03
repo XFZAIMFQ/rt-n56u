@@ -177,10 +177,11 @@ function fill_status(status_code){
                                             </td>
                                         </tr>
 
+                                        <tr> <th colspan="2" style="background-color: #E3E3E3;"><#menu5_19_4_0#></th> </tr>
+
                                         <tr> <th width="50%"><#menu5_19_4#></th>
                                             <td>
                                                 <select name="minieap_module" class="input" style="width: 145px;">
-                                                    <option value="printer" ><#menu5_19_4_0#></option>
                                                     <option value="rjv3" ><#menu5_19_4_1#></option>
                                                 </select>
                                             </td>
@@ -201,7 +202,6 @@ function fill_status(status_code){
                                             <td>
                                                 <select name="minieap_if_impl" class="input" style="width: 145px;">
                                                     <option value="sockraw" ><#menu5_19_6_0#></option>
-                                                    <option value="libpcap" ><#menu5_19_6_1#></option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -211,8 +211,6 @@ function fill_status(status_code){
                                                 <input type="text" maxlength="15" class="input" size="15" name="minieap_max_fail" style="width: 145px" value="<% nvram_get_x("","minieap_max_fail"); %>" onkeypress="return is_ipaddr(this,event);"/>
                                             </td>
                                         </tr>
-
-                                        <tr> <th colspan="2" style="background-color: #E3E3E3;"><#menu5_19_8_0#></th> </tr>
 
                                         <tr> <th width="50%"><#menu5_19_8#></th>
                                             <td>
@@ -292,12 +290,6 @@ function fill_status(status_code){
                                             <td>
                                                 <input type="text" maxlength="3" class="input" size="15" name="minieap_max_dhcp_count" value="<% nvram_get_x("","minieap_max_dhcp_count"); %>" />
                                             </td>
-                                        </tr>
-
-                                        <tr>
-                                            <th colspan="2" style="color:dimgray;"> 
-                                                <center>Supported by 洛 & Powered by MiniEAP</center>
-                                            </th>    
                                         </tr>
 
                                         <tr>
