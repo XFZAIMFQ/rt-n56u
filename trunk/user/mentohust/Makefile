@@ -3,7 +3,7 @@ SRC_URL = https://github.com/AutoCONFIG/mentohust-padavan/archive/refs/heads/mas
 THISDIR = $(shell pwd)
 DIR_NAME = mentohust-padavan-master
 
-LDFLAGS += -L$(STAGEDIR)
+LDFLAGS += -L$(STAGEDIR) -liconv
 
 all: download_test extract_test config_test
 	$(MAKE) -C $(DIR_NAME)
