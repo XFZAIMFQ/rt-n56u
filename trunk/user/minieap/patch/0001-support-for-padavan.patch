@@ -1,0 +1,491 @@
+diff --git a/README.md b/README.md
+index b2f0ced..0253bc8 100644
+--- a/README.md
++++ b/README.md
+@@ -56,7 +56,7 @@ MiniEAP
+ * `-p 密码`
+ * `-n 网卡名`
+ 
+-默认的网络帧收发模块是 `if_impl_sockraw`。如果要使用其他模块，如 `libpcap`，则必须指定 `--if-impl libpcap`。
++默认的网络帧收发模块是 `if_impl_sockraw`。如果要使用其他模块，如 `libpcap`，则必须指定 `--if_impl libpcap`。
+ 
+ 默认不使用任何数据包修改器，将只会发送单纯的标准 EAP 数据包。 **如需使用锐捷认证，则必须指定 `--module rjv3`。** 可以指定多个 `--module` 参数，程序会按参数的顺序让数据包流经这些插件。
+ 
+@@ -70,7 +70,7 @@ MiniEAP
+ 示例：在 en0 上使用锐捷认证，以 `libpcap` 作为网络帧收发模块，并且在数据包流经锐捷认证插件前后都打印出数据包的大小：
+ 
+ ```
+-minieap -u 201000000 -p 15000000000 -n en0 --module printer --module rjv3 --module printer --if-impl libpcap
++minieap -u 201000000 -p 15000000000 -n en0 --module printer --module rjv3 --module printer --if_impl libpcap
+ ```
+ 
+ ## 注意事项
+diff --git a/config.c b/config.c
+index d3ccbed..cf39054 100644
+--- a/config.c
++++ b/config.c
+@@ -55,14 +55,14 @@ void load_default_params() {
+ }
+ 
+ /*
+- * Loop on argv to find "--conf-file"
++ * Loop on argv to find "--conf_file"
+  */
+ RESULT parse_cmdline_conf_file(int argc, char* argv[]) {
+     int i = 1;
+     for (; i < argc; ++i) {
+-        if (strcmp(argv[i], "--conf-file") == 0) {
++        if (strcmp(argv[i], "--conf_file") == 0) {
+             if (i + 1 >= argc) {
+-                PR_ERR("--conf-file必须有一个参数");
++                PR_ERR("--conf_file必须有一个参数");
+                 return FAILURE;
+             } else {
+                 int _len = strnlen(argv[i + 1], MAX_PATH);
+@@ -91,24 +91,24 @@ static void print_cmdline_help() {
+         "\t--username, -u <...>\t用户名\n"
+         "\t--password, -p <...>\t密码\n"
+         "\t--nic, -n <...>\t\t要使用的网络界面名\n"
+-        "\t--stage-timeout, -t <num>\t单个认证阶段的超时时间 [默认" STR(DEFAULT_STAGE_TIMEOUT) "]\n"
+-        "\t--wait-after-fail, -r <num>\t认证失败后重新认证前的等待时间（但当服务器要求重新认证时将直接开始认证）[默认" STR(DEFAULT_WAIT_AFTER_FAIL_SECS) "]\n"
+-        "\t--max-fail, -l <num>\t最大允许认证失败次数 [默认" STR(DEFAULT_MAX_FAILURES) "]\n"
+-        "\t--no-auto-reauth, -x\t认证掉线后不允许自动重连 [默认" STR(DEFAULT_RESTART_ON_LOGOFF) "]\n"
++        "\t--stage_timeout, -t <num>\t单个认证阶段的超时时间 [默认" STR(DEFAULT_STAGE_TIMEOUT) "]\n"
++        "\t--wait_after_fail, -r <num>\t认证失败后重新认证前的等待时间（但当服务器要求重新认证时将直接开始认证）[默认" STR(DEFAULT_WAIT_AFTER_FAIL_SECS) "]\n"
++        "\t--max_fail, -l <num>\t最大允许认证失败次数 [默认" STR(DEFAULT_MAX_FAILURES) "]\n"
++        "\t--no_auto_reauth, -x\t认证掉线后不允许自动重连 [默认" STR(DEFAULT_RESTART_ON_LOGOFF) "]\n"
+         "\t--daemonize, -b <0-3>\t后台运行方式： [默认0]\n"
+             "\t\t\t\t0 = 不后台\n"
+             "\t\t\t\t1 = 后台运行，关闭输出\n"
+             "\t\t\t\t2 = 后台运行，输出到当前控制台\n"
+             "\t\t\t\t3 = 后台运行，输出到日志文件\n"
+-        "\t--proxy-lan-iface, -z <...>\t代理认证时的 LAN 网络界面名 [默认无]\n"
+-        "\t--auth-round, -j <num>\t需要认证的次数 [默认1]\n"
+-        "\t--max-retries <num>\t最大超时重试的次数 [默认3]\n"
+-        "\t--pid-file <...>\tPID 文件路径，设为none可禁用 [默认" DEFAULT_PIDFILE "]\n"
+-        "\t--conf-file <...>\t配置文件路径 [默认" DEFAULT_CONFFILE "]\n"
+-        "\t--if-impl <...>\t\t选择此网络操作模块，仅允许选择一次 [默认为第一个可用的模块]\n"
+-        "\t--pkt-plugin <...>\t启用此名称的数据包修改器，可启用多次、多个 [默认无]\n"
++        "\t--proxy_lan_iface, -z <...>\t代理认证时的 LAN 网络界面名 [默认无]\n"
++        "\t--auth_round, -j <num>\t需要认证的次数 [默认1]\n"
++        "\t--max_retries <num>\t最大超时重试的次数 [默认3]\n"
++        "\t--pid_file <...>\tPID 文件路径，设为none可禁用 [默认" DEFAULT_PIDFILE "]\n"
++        "\t--conf_file <...>\t配置文件路径 [默认" DEFAULT_CONFFILE "]\n"
++        "\t--if_impl <...>\t\t选择此网络操作模块，仅允许选择一次 [默认为第一个可用的模块]\n"
++        "\t--pkt_plugin <...>\t启用此名称的数据包修改器，可启用多次、多个 [默认无]\n"
+         "\t--module <...>\t\t同上\n"
+-            "\t\t\t\t当命令行选项中存在 --module 或 --pkt-plugin 时，配置文件中的所有 module= 行都将被忽略\n"
++            "\t\t\t\t当命令行选项中存在 --module 或 --pkt_plugin 时，配置文件中的所有 module= 行都将被忽略\n"
+     );
+ 
+     print_if_impl_list();
+@@ -135,37 +135,37 @@ static void parse_one_opt(const char* option, const char* argument) {
+         COPY_N_ARG_TO(g_prog_config.ifname, IFNAMSIZ);
+     } else if (ISOPT("daemonize")) {
+         g_prog_config.daemon_type = atoi(argument) % 4;
+-    } else if (ISOPT("pkt-plugin") || ISOPT("module")) {
++    } else if (ISOPT("pkt_plugin") || ISOPT("module")) {
+         insert_data(&g_prog_config.packet_plugin_list, (void*)argument);
+-    } else if (ISOPT("if-impl")) {
++    } else if (ISOPT("if_impl")) {
+         COPY_N_ARG_TO(g_prog_config.if_impl, IFNAMSIZ);
+     } else if (ISOPT("save")) {
+         g_prog_config.save_now = 1;
+     } else if (ISOPT("help")) {
+         print_cmdline_help(); /* 调用本函数将退出程序 */
+-    } else if (ISOPT("max-fail")) {
++    } else if (ISOPT("max_fail")) {
+         g_prog_config.max_failures = atoi(argument);
+-    } else if (ISOPT("max-retries")) {
++    } else if (ISOPT("max_retries")) {
+         g_prog_config.max_retries = atoi(argument);
+-    } else if (ISOPT("no-auto-reauth")) {
++    } else if (ISOPT("no_auto_reauth")) {
+         g_prog_config.restart_on_logoff = 0;
+-    } else if (ISOPT("wait-after-fail")) {
++    } else if (ISOPT("wait_after_fail")) {
+         g_prog_config.wait_after_fail_secs = atoi(argument);
+-    } else if (ISOPT("stage-timeout")) {
++    } else if (ISOPT("stage_timeout")) {
+         g_prog_config.stage_timeout = atoi(argument);
+     } else if (ISOPT("kill")) {
+         if (argument == NULL)
+             g_prog_config.kill_type = KILL_ONLY; /* 结束其他实例并退出 */
+         else
+             g_prog_config.kill_type = KILL_AND_START; /* 结束其他实例，本实例继续运行 */
+-    } else if (ISOPT("proxy-lan-iface")) {
++    } else if (ISOPT("proxy_lan_iface")) {
+         g_proxy_config.proxy_on = 1;
+         COPY_N_ARG_TO(g_proxy_config.lan_ifname, IFNAMSIZ);
+-    } else if (ISOPT("auth-round")) {
++    } else if (ISOPT("auth_round")) {
+         g_prog_config.auth_round = atoi(argument);
+-    } else if (ISOPT("pid-file")) {
++    } else if (ISOPT("pid_file")) {
+         COPY_N_ARG_TO(g_prog_config.pidfile, MAX_PATH);
+-    } else if (ISOPT("log-file")) {
++    } else if (ISOPT("log_file")) {
+         COPY_N_ARG_TO(g_prog_config.logfile, MAX_PATH);
+     }
+ }
+@@ -182,19 +182,19 @@ RESULT parse_cmdline_opts(int argc, char* argv[]) {
+ 	    { "username", required_argument, NULL, 'u' },
+ 	    { "password", required_argument, NULL, 'p' },
+ 	    { "nic", required_argument, NULL, 'n' },
+-	    { "stage-timeout", required_argument, NULL, 't' },
+-	    { "wait-after-fail", required_argument, NULL, 'r' },
+-	    { "max-fail", required_argument, NULL, 'l' },
+-	    { "no-auto-reauth", no_argument, NULL, 'x' },
++	    { "stage_timeout", required_argument, NULL, 't' },
++	    { "wait_after_fail", required_argument, NULL, 'r' },
++	    { "max_fail", required_argument, NULL, 'l' },
++	    { "no_auto_reauth", no_argument, NULL, 'x' },
+ 	    { "daemonize", required_argument, NULL, 'b' },
+-	    { "proxy-lan-iface", required_argument, NULL, 'z' },
+-	    { "auth-round", required_argument, NULL, 'j' },
+-	    { "max-retries", required_argument, NULL, 0},
+-	    { "pid-file", required_argument, NULL, 0},
+-	    { "if-impl", required_argument, NULL, 0},
+-	    { "pkt-plugin", required_argument, NULL, 0},
++	    { "proxy_lan_iface", required_argument, NULL, 'z' },
++	    { "auth_round", required_argument, NULL, 'j' },
++	    { "max_retries", required_argument, NULL, 0},
++	    { "pid_file", required_argument, NULL, 0},
++	    { "if_impl", required_argument, NULL, 0},
++	    { "pkt_plugin", required_argument, NULL, 0},
+ 	    { "module", required_argument, NULL, 0},
+-	    { "log-file", required_argument, NULL, 0},
++	    { "log_file", required_argument, NULL, 0},
+ 	    { NULL, no_argument, NULL, 0 }
+     };
+ 
+@@ -207,7 +207,7 @@ RESULT parse_cmdline_opts(int argc, char* argv[]) {
+                 break;
+             case 0:
+                 if ((strcmp(longOpts[longIndex].name, "module") == 0 ||
+-                    strcmp(longOpts[longIndex].name, "pkt-plugin") == 0)
++                    strcmp(longOpts[longIndex].name, "pkt_plugin") == 0)
+                     && cmd_module_list_reset == FALSE) {
+                     /* When there is at least one "--module" provided on the cmdline,
+                        give up all the plugins read from config file.
+@@ -236,7 +236,7 @@ RESULT parse_cmdline_opts(int argc, char* argv[]) {
+ 
+ static void parser_traverser(CONFIG_PAIR* pair, void* unused) {
+     if (pair->value[0] == 0) {
+-        return; /* Refuse options without value. At least there should be no-auto-reauth=1 */
++        return; /* Refuse options without value. At least there should be no_auto_reauth=1 */
+     }
+     parse_one_opt(pair->key, pair->value);
+ }
+@@ -258,16 +258,16 @@ RESULT save_config_file() {
+     conf_parser_add_value("nic", g_prog_config.ifname);
+     save_active_packet_plugin_list();
+     conf_parser_add_value("daemonize", my_itoa(g_prog_config.daemon_type, itoa_buf, 10));
+-    conf_parser_add_value("if-impl", get_if_impl()->name);
+-    conf_parser_add_value("max-fail", my_itoa(g_prog_config.max_failures, itoa_buf, 10));
+-    conf_parser_add_value("max-retries", my_itoa(g_prog_config.max_retries, itoa_buf, 10));
+-    conf_parser_add_value("no-auto-reauth", g_prog_config.restart_on_logoff ? "0" : "1");
+-    conf_parser_add_value("wait-after-fail", my_itoa(g_prog_config.wait_after_fail_secs, itoa_buf, 10));
+-    conf_parser_add_value("stage-timeout", my_itoa(g_prog_config.stage_timeout, itoa_buf, 10));
+-    conf_parser_add_value("proxy-lan-iface", g_proxy_config.lan_ifname);
+-    conf_parser_add_value("auth-round", my_itoa(g_prog_config.auth_round, itoa_buf, 10));
+-    conf_parser_add_value("pid-file", g_prog_config.pidfile);
+-    conf_parser_add_value("log-file", g_prog_config.logfile);
++    conf_parser_add_value("if_impl", get_if_impl()->name);
++    conf_parser_add_value("max_fail", my_itoa(g_prog_config.max_failures, itoa_buf, 10));
++    conf_parser_add_value("max_retries", my_itoa(g_prog_config.max_retries, itoa_buf, 10));
++    conf_parser_add_value("no_auto_reauth", g_prog_config.restart_on_logoff ? "0" : "1");
++    conf_parser_add_value("wait_after_fail", my_itoa(g_prog_config.wait_after_fail_secs, itoa_buf, 10));
++    conf_parser_add_value("stage_timeout", my_itoa(g_prog_config.stage_timeout, itoa_buf, 10));
++    conf_parser_add_value("proxy_lan_iface", g_proxy_config.lan_ifname);
++    conf_parser_add_value("auth_round", my_itoa(g_prog_config.auth_round, itoa_buf, 10));
++    conf_parser_add_value("pid_file", g_prog_config.pidfile);
++    conf_parser_add_value("log_file", g_prog_config.logfile);
+     packet_plugin_save_config();
+     return conf_parser_save_file();
+ }
+diff --git a/include/config.h b/include/config.h
+index 1344291..59e9e48 100644
+--- a/include/config.h
++++ b/include/config.h
+@@ -74,7 +74,7 @@ typedef struct _prog_config {
+      * but cmdline opts may override it.
+      */
+     char* conffile;
+-    #define DEFAULT_CONFFILE "/etc/minieap.conf"
++    #define DEFAULT_CONFFILE "/etc/storage/minieap.conf"
+ 
+     /*
+      * Config file path
+@@ -82,7 +82,7 @@ typedef struct _prog_config {
+      * but cmdline opts may override it.
+      */
+     char* logfile;
+-    #define DEFAULT_LOGFILE "/var/log/minieap.log"
++    #define DEFAULT_LOGFILE "/tmp/minieap.log"
+ 
+     /*
+      * Selected interface implementation: how to drive network adapters?
+diff --git a/minieap.1 b/minieap.1
+index ce9dd25..aa87450 100644
+--- a/minieap.1
++++ b/minieap.1
+@@ -41,11 +41,11 @@ password
+ network interface
+ 
+ .TP
+-.BR \-\-stage-timeout ", " \-t " <\fIsecond\fR>"
++.BR \-\-stage_timeout ", " \-t " <\fIsecond\fR>"
+ timeout for each auth [default is 5]
+ 
+ .TP
+-.BR \-\-wait-after-fail ", " \-r " <\fIsecond\fR>"
++.BR \-\-wait_after_fail ", " \-r " <\fIsecond\fR>"
+ time to wait after fail (but will start immediately if the server ask to) [default is 30]
+ 
+ .TP
+@@ -86,7 +86,7 @@ set to none to disable [default is /var/run/minieap.pid]
+ 
+ .TP
+ .BR \-\-conf\-file " <\fIconffile\fR>"
+-config file [default /etc/minieap.conf]
++config file [default /etc/storage/minieap.conf]
+ 
+ .TP
+ .BR \-\-if\-impl " <\fImodule\fR>"
+diff --git a/minieap.service.in b/minieap.service.in
+index edf6108..fa0bd05 100644
+--- a/minieap.service.in
++++ b/minieap.service.in
+@@ -4,7 +4,7 @@ Documentation=man:earlyoom(1) https://github.com/updateing/minieap
+ After=network.target
+ 
+ [Service]
+-ExecStart=:TARGET:/minieap --conf-file :SYSCONFDIR:/minieap.conf
++ExecStart=:TARGET:/minieap --conf_file :SYSCONFDIR:/minieap.conf
+ StandardOutput=null
+ StandardError=syslog
+ 
+diff --git a/packet_plugin/rjv3/packet_plugin_rjv3.c b/packet_plugin/rjv3/packet_plugin_rjv3.c
+index c671c88..05636c1 100644
+--- a/packet_plugin/rjv3/packet_plugin_rjv3.c
++++ b/packet_plugin/rjv3/packet_plugin_rjv3.c
+@@ -50,7 +50,7 @@ static RESULT append_rj_cmdline_opt(struct _packet_plugin* this, const char* opt
+     char* _split;
+ 
+     if (_arg == NULL) {
+-        PR_ERRNO("无法为命令行的 --rj-option 参数分配内存空间");
++        PR_ERRNO("无法为命令行的 --rj_option 参数分配内存空间");
+         return FAILURE;
+     }
+ 
+@@ -88,7 +88,7 @@ static RESULT append_rj_cmdline_opt(struct _packet_plugin* this, const char* opt
+     return SUCCESS;
+ 
+ malformat:
+-    PR_ERR("--rj-option 的参数格式错误：%s", opt);
++    PR_ERR("--rj_option 的参数格式错误：%s", opt);
+ fail:
+     free(_arg);
+     return FAILURE;
+@@ -99,26 +99,26 @@ fail:
+ void rjv3_print_cmdline_help(struct _packet_plugin* this) {
+     PR_RAW(
+         "\t--heartbeat, -e <num>\t\t心跳间隔秒数 [默认" STR(DEFAULT_HEARTBEAT_INTERVAL) "]\n"
+-        "\t--eap-bcast-addr, -a <0-1>\tStart 包广播地址： [默认" STR(DEFAULT_EAP_BCAST_ADDR) "]\n"
++        "\t--eap_bcast_addr, -a <0-1>\tStart 包广播地址： [默认" STR(DEFAULT_EAP_BCAST_ADDR) "]\n"
+             "\t\t\t\t\t0 = 标准地址\n"
+             "\t\t\t\t\t1 = 锐捷私有地址\n"
+-        "\t--dhcp-type, -d <0-3>\t\tDHCP 方式： [默认" STR(DEFAULT_DHCP_TYPE) "]\n"
++        "\t--dhcp_type, -d <0-3>\t\tDHCP 方式： [默认" STR(DEFAULT_DHCP_TYPE) "]\n"
+             "\t\t\t\t\t0 = 不使用 DHCP\n"
+             "\t\t\t\t\t1 = 二次认证\n"
+             "\t\t\t\t\t2 = 认证后 DHCP\n"
+             "\t\t\t\t\t3 = 认证前 DHCP\n"
+         "\t--dhcp-script, -c <...>\t\t二次认证之间及认证完成后运行此命令 [默认无]\n"
+-        "\t--rj-option <type>:<value>[:r]\t自定义认证字段，其中 type 和 value 必须为十六进制串\n"
+-            "\t\t\t\t\t如 --rj-option 6a:000102 表示新增一条类型为 0x6a、内容为 0x00 0x01 0x02的字段\n"
+-            "\t\t\t\t\t:r 表示替换内置生成的字段，如 --rj-option 6f:000102:r 表示将内置算法生成的类型为 0x6f 的字段内容替换为 0x00 0x12 0x02\n"
++        "\t--rj_option <type>:<value>[:r]\t自定义认证字段，其中 type 和 value 必须为十六进制串\n"
++            "\t\t\t\t\t如 --rj_option 6a:000102 表示新增一条类型为 0x6a、内容为 0x00 0x01 0x02的字段\n"
++            "\t\t\t\t\t:r 表示替换内置生成的字段，如 --rj_option 6f:000102:r 表示将内置算法生成的类型为 0x6f 的字段内容替换为 0x00 0x12 0x02\n"
+             "\t\t\t\t\t当命令行与配置文件中同时存在此选项时，两处的选项都将发挥作用。若认证失败，请检查配置文件中是否有错误的参数\n"
+         "\t--service <str>\t\t\t自定义服务名 [默认" DEFAULT_SERVICE_NAME "]\n"
+-        "\t--version-str <str>\t\t自定义版本字符串 [默认" DEFAULT_VER_STR "]\n"
+-        "\t--fake-dns1 <str>\t\t自定义主 DNS 地址（点分十进制 IPv4 格式） [默认自动获取]\n"
+-        "\t--fake-dns2 <str>\t\t自定义次 DNS 地址（IPv4 / IPv6 不限） [默认自动获取]\n"
+-        "\t--fake-serial <str>\t\t自定义硬盘序列号 [默认自动获取]\n"
+-        "\t--max-dhcp-count <num>\t\t二次认证时等待 DHCP 结果的允许超时次数 [默认" STR(DEFAULT_MAX_DHCP_COUNT) "]\n"
+-        "\t从 --service 到 --fake-serial（除 --fake-dns1）都是对应的 --rj-option 的简单形式，可直接使用 ASCII 字符串作为参数，不需转化为十六进制表示\n"
++        "\t--version_str <str>\t\t自定义版本字符串 [默认" DEFAULT_VER_STR "]\n"
++        "\t--fake_dns1 <str>\t\t自定义主 DNS 地址（点分十进制 IPv4 格式） [默认自动获取]\n"
++        "\t--fake_dns2 <str>\t\t自定义次 DNS 地址（IPv4 / IPv6 不限） [默认自动获取]\n"
++        "\t--fake_serial <str>\t\t自定义硬盘序列号 [默认自动获取]\n"
++        "\t--max_dhcp_count <num>\t\t二次认证时等待 DHCP 结果的允许超时次数 [默认" STR(DEFAULT_MAX_DHCP_COUNT) "]\n"
++        "\t从 --service 到 --fake_serial（除 --fake_dns1）都是对应的 --rj_option 的简单形式，可直接使用 ASCII 字符串作为参数，不需转化为十六进制表示\n"
+         );
+ }
+ 
+@@ -143,28 +143,28 @@ static RESULT rjv3_parse_one_opt(struct _packet_plugin* this, const char* option
+         if (PRIV->heartbeat_interval == 0) {
+             PR_WARN("心跳间隔指定为 0，这将会禁止心跳！请确认参数格式正确。");
+         }
+-    } else if (ISOPT("eap-bcast-addr")) {
++    } else if (ISOPT("eap_bcast_addr")) {
+         PRIV->bcast_addr = atoi(argument) % 2; /* 一共2个选项 */ // Do not allow CER
+-    } else if (ISOPT("dhcp-type")) {
++    } else if (ISOPT("dhcp_type")) {
+         PRIV->dhcp_type = atoi(argument) % 4;
+     } else if (ISOPT("dhcp-script")) {
+         COPY_N_ARG_TO(PRIV->dhcp_script, MAX_PATH);
+-    } else if (ISOPT("rj-option")) {
+-        /* Allow mulitple rj-options */
++    } else if (ISOPT("rj_option")) {
++        /* Allow mulitple rj_options */
+         if (IS_FAIL(append_rj_cmdline_opt(this, argument))) {
+             return FAILURE;
+         }
+     } else if (ISOPT("service")) {
+         COPY_N_ARG_TO(PRIV->service_name, RJV3_SIZE_SERVICE);
+-    } else if (ISOPT("version-str")) {
++    } else if (ISOPT("version_str")) {
+         COPY_N_ARG_TO(PRIV->ver_str, MAX_PROP_LEN);
+-    } else if (ISOPT("fake-dns1")) {
++    } else if (ISOPT("fake_dns1")) {
+         COPY_N_ARG_TO(PRIV->fake_dns1, INET6_ADDRSTRLEN);
+-    } else if (ISOPT("fake-dns2")) {
++    } else if (ISOPT("fake_dns2")) {
+         COPY_N_ARG_TO(PRIV->fake_dns2, INET6_ADDRSTRLEN);
+-    } else if (ISOPT("fake-serial")) {
++    } else if (ISOPT("fake_serial")) {
+         COPY_N_ARG_TO(PRIV->fake_serial, MAX_PROP_LEN);
+-    } else if (ISOPT("max-dhcp-count")) {
++    } else if (ISOPT("max_dhcp_count")) {
+         PRIV->max_dhcp_count = atoi(argument);
+     }
+     return SUCCESS;
+@@ -176,16 +176,16 @@ RESULT rjv3_process_cmdline_opts(struct _packet_plugin* this, int argc, char* ar
+     static const char* shortOpts = "-:e:a:d:v:f:c:q:";
+     static const struct option longOpts[] = {
+ 	    { "heartbeat", required_argument, NULL, 'e' },
+-	    { "eap-bcast-addr", required_argument, NULL, 'a' },
+-	    { "dhcp-type", required_argument, NULL, 'd' },
++	    { "eap_bcast_addr", required_argument, NULL, 'a' },
++	    { "dhcp_type", required_argument, NULL, 'd' },
+ 	    { "dhcp-script", required_argument, NULL, 'c' },
+-	    { "rj-option", required_argument, NULL, 0 },
++	    { "rj_option", required_argument, NULL, 0 },
+ 	    { "service", required_argument, NULL, 0 },
+-	    { "version-str", required_argument, NULL, 0 },
+-	    { "fake-dns1", required_argument, NULL, 0 },
+-	    { "fake-dns2", required_argument, NULL, 0 },
+-	    { "fake-serial", required_argument, NULL, 0 },
+-	    { "max-dhcp-count", required_argument, NULL, 0 },
++	    { "version_str", required_argument, NULL, 0 },
++	    { "fake_dns1", required_argument, NULL, 0 },
++	    { "fake_dns2", required_argument, NULL, 0 },
++	    { "fake_serial", required_argument, NULL, 0 },
++	    { "max_dhcp_count", required_argument, NULL, 0 },
+ 	    { NULL, no_argument, NULL, 0 }
+     };
+ 
+@@ -221,7 +221,7 @@ static RESULT rjv3_process_success(struct _packet_plugin* this, ETH_EAP_FRAME* f
+     if (PRIV->dhcp_type == DHCP_DOUBLE_AUTH) {
+         if (PRIV->succ_count < 2) {
+             /* This requires fine-grained control of authentication progress,
+-             * so we can not use the logic of --auth-round.
++             * so we can not use the logic of --auth_round.
+              */
+             PR_INFO("首次认证成功，正在执行 DHCP 脚本以准备第二次认证");
+ 
+@@ -283,7 +283,7 @@ RESULT rjv3_on_frame_received(struct _packet_plugin* this, ETH_EAP_FRAME* frame)
+ 
+ static void rjv3_parser_traverser(CONFIG_PAIR* pair, void* this) {
+     if (pair->value[0] == 0) {
+-        return; /* Refuse options without value. At least there should be no-auto-reauth=1 */
++        return; /* Refuse options without value. At least there should be no_auto_reauth=1 */
+     }
+     rjv3_parse_one_opt((struct _packet_plugin*)this, pair->key, pair->value);
+ }
+@@ -303,7 +303,7 @@ static void rjv3_save_one_prop(void* prop, void* is_mod) {
+                         + (is_mod ? 2 : 0) + 1;
+     char* prop_str = (char*)malloc(prop_str_len);
+     if (prop_str == NULL) {
+-        PR_ERRNO("无法保存 --rj-option 选项");
++        PR_ERRNO("无法保存 --rj_option 选项");
+         return;
+     }
+ 
+@@ -325,24 +325,24 @@ static void rjv3_save_one_prop(void* prop, void* is_mod) {
+ 
+     *curr_pos = 0;
+ 
+-    conf_parser_add_value("rj-option", prop_str);
++    conf_parser_add_value("rj_option", prop_str);
+     free(prop_str);
+ }
+ 
+ void rjv3_save_config(struct _packet_plugin* this) {
+     char itoa_buf[10];
+     conf_parser_add_value("heartbeat", my_itoa(PRIV->heartbeat_interval, itoa_buf, 10));
+-    conf_parser_add_value("eap-bcast-addr", my_itoa(PRIV->bcast_addr, itoa_buf, 10));
+-    conf_parser_add_value("dhcp-type", my_itoa(PRIV->dhcp_type, itoa_buf, 10));
++    conf_parser_add_value("eap_bcast_addr", my_itoa(PRIV->bcast_addr, itoa_buf, 10));
++    conf_parser_add_value("dhcp_type", my_itoa(PRIV->dhcp_type, itoa_buf, 10));
+     list_traverse(PRIV->cmd_prop_list, rjv3_save_one_prop, FALSE);
+     list_traverse(PRIV->cmd_prop_mod_list, rjv3_save_one_prop, (void*)TRUE); /* No warning! */
+     conf_parser_add_value("service", PRIV->service_name);
+-    conf_parser_add_value("version-str", PRIV->ver_str);
++    conf_parser_add_value("version_str", PRIV->ver_str);
+     conf_parser_add_value("dhcp-script", PRIV->dhcp_script);
+-    conf_parser_add_value("fake-dns1", PRIV->fake_dns1);
+-    conf_parser_add_value("fake-dns2", PRIV->fake_dns2);
+-    conf_parser_add_value("fake-serial", PRIV->fake_serial);
+-    conf_parser_add_value("max-dhcp-count", my_itoa(PRIV->max_dhcp_count, itoa_buf, 10));
++    conf_parser_add_value("fake_dns1", PRIV->fake_dns1);
++    conf_parser_add_value("fake_dns2", PRIV->fake_dns2);
++    conf_parser_add_value("fake_serial", PRIV->fake_serial);
++    conf_parser_add_value("max_dhcp_count", my_itoa(PRIV->max_dhcp_count, itoa_buf, 10));
+ }
+ 
+ static void packet_plugin_rjv3_print_banner() {
+diff --git a/packet_plugin/rjv3/packet_plugin_rjv3_priv.c b/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
+index 5a9e2ce..d6ef6b6 100644
+--- a/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
++++ b/packet_plugin/rjv3/packet_plugin_rjv3_priv.c
+@@ -121,7 +121,7 @@ static void rjv3_set_secondary_dns(char* dns_ascii_buf, char* fake_dns) {
+     if (dns_list && dns_list->next) {
+         strncpy(dns_ascii_buf, dns_list->next->content, INET6_ADDRSTRLEN);
+     } else {
+-        PR_WARN("第二 DNS 地址获取错误。若认证失败，请用 --fake-dns2 指定第二 DNS 地址")
++        PR_WARN("第二 DNS 地址获取错误。若认证失败，请用 --fake_dns2 指定第二 DNS 地址")
+     }
+     free_dns_list(&dns_list);
+     return;
+@@ -175,7 +175,7 @@ static void rjv3_set_hdd_serial(uint8_t* serial_buf, char* fake_serial) {
+     }
+ 
+ info_err:
+-    PR_ERRNO("无法从 /etc/mtab 获取根分区挂载设备信息，请使用 --fake-serial 选项手动指定硬盘序列号");
++    PR_ERRNO("无法从 /etc/mtab 获取根分区挂载设备信息，请使用 --fake_serial 选项手动指定硬盘序列号");
+ close_return:
+     if (_fp != NULL) fclose(_fp);
+     if (_root_dev) free(_root_dev);
+@@ -216,7 +216,7 @@ static RESULT rjv3_get_dhcp_lease(struct _packet_plugin* this, DHCP_LEASE* lease
+     _dns1.family = AF_INET;
+     if (!PRIV->fake_dns1) {
+         if (IS_FAIL(obtain_dns_list(&_dns_list))) {
+-            PR_ERR("主 DNS 地址获取错误，请使用 --fake-dns1 选项手动指定主 DNS 地址");
++            PR_ERR("主 DNS 地址获取错误，请使用 --fake_dns1 选项手动指定主 DNS 地址");
+             goto fail;
+         }
+         _dns1_str = _dns_list->content;
+@@ -224,7 +224,7 @@ static RESULT rjv3_get_dhcp_lease(struct _packet_plugin* this, DHCP_LEASE* lease
+         _dns1_str = PRIV->fake_dns1;
+     }
+     if (inet_pton(AF_INET, _dns1_str, &_dns1.ip) == 0) {
+-            PR_ERR("主 DNS 地址格式错误，要求 IPv4 地址。请使用 --fake-dns1 选项手动指定主 DNS 地址");
++            PR_ERR("主 DNS 地址格式错误，要求 IPv4 地址。请使用 --fake_dns1 选项手动指定主 DNS 地址");
+             goto fail;
+     }
+ 
