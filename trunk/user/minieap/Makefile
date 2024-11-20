@@ -1,4 +1,4 @@
-SRC_NAME = minieap-padavan
+SRC_NAME = minieap-master
 SRC_URL = https://github.com/updateing/minieap/archive/refs/heads/master.zip
 THISDIR = $(shell pwd)
 
